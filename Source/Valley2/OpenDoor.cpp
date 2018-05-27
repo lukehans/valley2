@@ -18,26 +18,18 @@ UOpenDoor::UOpenDoor()
 void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
-
+	Owner = GetOwner();
 	ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
 }
 
 void UOpenDoor::OpenDoor()
 {
-	AActor* Owner = GetOwner();
-	UE_LOG(LogTemp, Warning, TEXT("In Open Door!"));
-	if (Owner != nullptr)
-	{
-		FString ObjectName = Owner->GetName();
-		//UE_LOG(LogTemp, Warning, TEXT("OpenDoor initialized. Owner name is %s."), *ObjectName);
+	Owner->SetActorRotation(FRotator(0.f, OpenAngle, 0.f));
+}
 
-		FRotator NewRotation = FRotator(0.f, OpenAngle, 0.f);
-		Owner->SetActorRotation(NewRotation);
-	}
-	else
-	{
-		//UE_LOG(LogTemp, Warning, TEXT("OpenDoor initialized, but Owner is nullptr."));
-	}
+void UOpenDoor::CloseDoor()
+{
+	Owner->SetActorRotation(FRotator(0.f, 0.f, 0.f));
 }
 
 void UOpenDoor::CloseDoor()
@@ -67,6 +59,12 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	{
 		OpenDoor();
 		LastDoorOpenTime = GetWorld()->GetTimeSeconds();
+	}
+		
+	// Check if it's time to close door
+	if (GetWorld()->GetTimeSeconds() - LastDoorOpenTime > DoorCloseDelay)
+	{
+		CloseDoor();
 	}
 }
 
