@@ -40,6 +40,24 @@ void UOpenDoor::OpenDoor()
 	}
 }
 
+void UOpenDoor::CloseDoor()
+{
+	AActor* Owner = GetOwner();
+	UE_LOG(LogTemp, Warning, TEXT("In Open Door!"));
+	if (Owner != nullptr)
+	{
+		FString ObjectName = Owner->GetName();
+		//UE_LOG(LogTemp, Warning, TEXT("OpenDoor initialized. Owner name is %s."), *ObjectName);
+
+		FRotator NewRotation = FRotator(0.f, OpenAngle, 0.f);
+		Owner->SetActorRotation(NewRotation);
+	}
+	else
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("OpenDoor initialized, but Owner is nullptr."));
+	}
+}
+
 // Called every frame
 void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
@@ -48,6 +66,7 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	if (PressurePlate->IsOverlappingActor(ActorThatOpens))
 	{
 		OpenDoor();
+		LastDoorOpenTime = GetWorld()->GetTimeSeconds();
 	}
 }
 
